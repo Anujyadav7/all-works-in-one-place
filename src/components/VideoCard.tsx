@@ -6,9 +6,10 @@ interface VideoCardProps {
   src: string;
   title?: string;
   thumbnail?: string;
+  className?: string;
 }
 
-const VideoCard: React.FC<VideoCardProps> = ({ src, title, thumbnail }) => {
+const VideoCard: React.FC<VideoCardProps> = ({ src, title, thumbnail, className = '' }) => {
   const [isPlaying, setIsPlaying] = useState(false);
 
   const handlePlay = () => {
@@ -16,7 +17,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ src, title, thumbnail }) => {
   };
 
   return (
-    <div className="video-container rounded-lg overflow-hidden bg-black/20 aspect-video">
+    <div className={`video-container rounded-lg overflow-hidden bg-black/20 aspect-video ${className}`}>
       {!isPlaying ? (
         <div className="relative w-full h-full">
           <div 

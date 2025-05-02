@@ -1,6 +1,8 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
+import { useToast } from "@/components/ui/use-toast";
+import { supabase } from '@/integrations/supabase/client';
 
 import Navbar from '../components/Navbar';
 import ScrollReveal from '../components/ScrollReveal';
@@ -12,6 +14,10 @@ import Footer from '../components/Footer';
 import TabSection from '../components/TabSection';
 
 const Index = () => {
+  const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState('personal');
+  const [activeVideoTab, setActiveVideoTab] = useState('reels');
+
   // Array of Firebase links organized by section
   const firebaseLinks = {
     profile: "https://firebasestorage.googleapis.com/v0/b/my-portfolio-21861.appspot.com/o/my%20pics%2Fmy%20pic%201.jpg?alt=media&token=a7bd705b-9564-485f-ae0b-fbaa34d31e92",
@@ -54,6 +60,36 @@ const Index = () => {
     ],
   };
 
+  // Handle contact form submission to Supabase
+  const handleSubmitContact = async (formData: { name: string; email: string; message: string }) => {
+    try {
+      const { error } = await supabase
+        .from('contact_submissions')
+        .insert([
+          { 
+            name: formData.name,
+            email: formData.email, 
+            message: formData.message 
+          }
+        ]);
+        
+      if (error) throw error;
+      
+      toast({
+        title: "Message sent!",
+        description: "Thank you for reaching out. I'll get back to you soon.",
+      });
+      
+    } catch (error) {
+      console.error("Error submitting contact form:", error);
+      toast({
+        variant: "destructive",
+        title: "Something went wrong",
+        description: "Please try again later.",
+      });
+    }
+  };
+
   // Component to reveal elements on scroll
   useEffect(() => {
     const handleScroll = () => {
@@ -75,12 +111,71 @@ const Index = () => {
     
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  // Custom TabSection rendering for mobile optimization
-  const renderTabContent = (content: React.ReactNode) => {
+  
+  // Content rendering functions
+  const renderShowcaseContent = () => {
+    let content;
+    
+    switch (activeTab) {
+      case 'personal':
+        content = firebaseLinks.pwContent;
+        break;
+      case 'travel':
+        content = firebaseLinks.travelPosters;
+        break;
+      case 'instagram':
+        content = firebaseLinks.instagramAds;
+        break;
+      case 'youtube':
+        content = firebaseLinks.youtubeThumbnails;
+        break;
+      default:
+        content = firebaseLinks.pwContent;
+    }
+    
     return (
-      <div className="mt-6">
-        {content}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {content.map((src, idx) => (
+          <ImageCard 
+            key={idx} 
+            src={src} 
+            alt={`Content ${idx + 1}`}
+            title={`${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} ${idx + 1}`}
+            description="Engaging content designed for brand presence"
+          />
+        ))}
+      </div>
+    );
+  };
+
+  const renderVideoContent = () => {
+    let content;
+    
+    switch (activeVideoTab) {
+      case 'reels':
+        content = firebaseLinks.instagramReels;
+        break;
+      case 'shorts':
+        content = firebaseLinks.youtubeShorts;
+        break;
+      case 'product':
+        content = firebaseLinks.productSellVideos;
+        break;
+      default:
+        content = firebaseLinks.instagramReels;
+    }
+    
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {content.map((src, idx) => (
+          <div key={idx} className="flex justify-center">
+            <VideoCard 
+              src={src} 
+              title={`${activeVideoTab.charAt(0).toUpperCase() + activeVideoTab.slice(1)} ${idx + 1}`}
+              className="reel-format h-[400px]" 
+            />
+          </div>
+        ))}
       </div>
     );
   };
@@ -89,9 +184,14 @@ const Index = () => {
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       
-      {/* Hero Section */}
-      <section id="home" className="pt-24 md:pt-32 pb-16 md:pb-24">
-        <div className="container mx-auto px-4">
+      {/* Hero Section with glassmorphic elements */}
+      <section id="home" className="pt-24 md:pt-32 pb-16 md:pb-24 relative overflow-hidden">
+        {/* Glassmorphic background elements */}
+        <div className="absolute top-20 left-10 w-64 h-64 rounded-full bg-primary/10 blur-3xl"></div>
+        <div className="absolute bottom-20 right-10 w-80 h-80 rounded-full bg-highlight/10 blur-3xl"></div>
+        <div className="absolute top-40 right-20 w-40 h-40 rounded-full bg-accent/10 blur-3xl"></div>
+        
+        <div className="container mx-auto px-4 relative z-10">
           <div className="flex flex-col md:flex-row items-center gap-10">
             <div className="md:w-1/2 mb-8 md:mb-0">
               <ScrollReveal>
@@ -117,14 +217,14 @@ const Index = () => {
             <div className="md:w-1/2 flex justify-center md:justify-end">
               <ScrollReveal>
                 <div className="relative">
-                  <div className="w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-white/10 glassmorphic">
+                  <div className="w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-white/10 glassmorphic bg-gradient-to-br from-background/50 to-background/30">
                     <img
                       src={firebaseLinks.profile}
                       alt="Social Media Manager"
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <div className="absolute -bottom-4 -right-4 glassmorphic p-4 rounded-lg">
+                  <div className="absolute -bottom-4 -right-4 glassmorphic p-4 rounded-lg bg-gradient-to-br from-background/50 to-background/30">
                     <p className="text-lg font-display font-medium highlight-gradient">Social Media Manager</p>
                   </div>
                 </div>
@@ -135,8 +235,9 @@ const Index = () => {
       </section>
       
       {/* Showcase Section */}
-      <section id="projects" className="py-16 md:py-24">
-        <div className="container mx-auto px-4">
+      <section id="projects" className="py-16 md:py-24 relative">
+        <div className="absolute top-40 left-1/4 w-96 h-96 rounded-full bg-primary/5 blur-3xl"></div>
+        <div className="container mx-auto px-4 relative z-10">
           <ScrollReveal>
             <h2 className="section-title text-center">Showcase</h2>
             <p className="text-center text-foreground/70 mb-12 max-w-2xl mx-auto">
@@ -145,35 +246,48 @@ const Index = () => {
           </ScrollReveal>
           
           <ScrollReveal>
-            <div className="glassmorphic-card mb-8">
-              <div className="tab-buttons-container">
-                <button className="tab-button active">Personal Branding</button>
-                <button className="tab-button">Travel Posters</button>
-                <button className="tab-button">Instagram Ad Suite</button>
-                <button className="tab-button">YouTube Thumbnails</button>
+            <div className="glassmorphic-card mb-8 bg-gradient-to-br from-background/40 to-background/20 backdrop-blur-xl">
+              {/* Tab navigation for different content types */}
+              <div className="flex flex-wrap justify-center gap-2 mb-8 overflow-x-auto py-2">
+                <button 
+                  onClick={() => setActiveTab('personal')}
+                  className={`px-3 py-1 text-xs md:text-sm rounded-full transition-all ${activeTab === 'personal' ? 'bg-primary text-white' : 'bg-white/5 hover:bg-white/10 border border-white/10'}`}
+                >
+                  Personal Branding
+                </button>
+                <button 
+                  onClick={() => setActiveTab('travel')}
+                  className={`px-3 py-1 text-xs md:text-sm rounded-full transition-all ${activeTab === 'travel' ? 'bg-primary text-white' : 'bg-white/5 hover:bg-white/10 border border-white/10'}`}
+                >
+                  Travel Posters
+                </button>
+                <button 
+                  onClick={() => setActiveTab('instagram')}
+                  className={`px-3 py-1 text-xs md:text-sm rounded-full transition-all ${activeTab === 'instagram' ? 'bg-primary text-white' : 'bg-white/5 hover:bg-white/10 border border-white/10'}`}
+                >
+                  Instagram Ad Suite
+                </button>
+                <button 
+                  onClick={() => setActiveTab('youtube')}
+                  className={`px-3 py-1 text-xs md:text-sm rounded-full transition-all ${activeTab === 'youtube' ? 'bg-primary text-white' : 'bg-white/5 hover:bg-white/10 border border-white/10'}`}
+                >
+                  YouTube Thumbnails
+                </button>
               </div>
               
-              {renderTabContent(
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {firebaseLinks.pwContent.map((src, idx) => (
-                    <ImageCard 
-                      key={idx} 
-                      src={src} 
-                      alt={`Personal Branding ${idx + 1}`}
-                      title={`Personal Branding ${idx + 1}`}
-                      description="Content designed for personal brand presence"
-                    />
-                  ))}
-                </div>
-              )}
+              {/* Render content based on active tab */}
+              {renderShowcaseContent()}
             </div>
           </ScrollReveal>
         </div>
       </section>
       
       {/* Video Edits Section */}
-      <section id="videos" className="py-16 md:py-24 bg-secondary/5">
-        <div className="container mx-auto px-4">
+      <section id="videos" className="py-16 md:py-24 bg-secondary/5 relative">
+        <div className="absolute bottom-20 right-10 w-80 h-80 rounded-full bg-highlight/5 blur-3xl"></div>
+        <div className="absolute top-40 left-20 w-60 h-60 rounded-full bg-primary/5 blur-3xl"></div>
+        
+        <div className="container mx-auto px-4 relative z-10">
           <ScrollReveal>
             <h2 className="section-title text-center">Video Edits</h2>
             <p className="text-center text-foreground/70 mb-12 max-w-2xl mx-auto">
@@ -182,34 +296,41 @@ const Index = () => {
           </ScrollReveal>
           
           <ScrollReveal>
-            <div className="glassmorphic-card">
-              <div className="tab-buttons-container">
-                <button className="tab-button active">Instagram Reels</button>
-                <button className="tab-button">YouTube Shorts</button>
-                <button className="tab-button">Product Videos</button>
+            <div className="glassmorphic-card bg-gradient-to-br from-background/40 to-background/20 backdrop-blur-xl">
+              {/* Tab navigation for different video types */}
+              <div className="flex flex-wrap justify-center gap-2 mb-8 overflow-x-auto py-2">
+                <button 
+                  onClick={() => setActiveVideoTab('reels')}
+                  className={`px-3 py-1 text-xs md:text-sm rounded-full transition-all ${activeVideoTab === 'reels' ? 'bg-primary text-white' : 'bg-white/5 hover:bg-white/10 border border-white/10'}`}
+                >
+                  Instagram Reels
+                </button>
+                <button 
+                  onClick={() => setActiveVideoTab('shorts')}
+                  className={`px-3 py-1 text-xs md:text-sm rounded-full transition-all ${activeVideoTab === 'shorts' ? 'bg-primary text-white' : 'bg-white/5 hover:bg-white/10 border border-white/10'}`}
+                >
+                  YouTube Shorts
+                </button>
+                <button 
+                  onClick={() => setActiveVideoTab('product')}
+                  className={`px-3 py-1 text-xs md:text-sm rounded-full transition-all ${activeVideoTab === 'product' ? 'bg-primary text-white' : 'bg-white/5 hover:bg-white/10 border border-white/10'}`}
+                >
+                  Product Videos
+                </button>
               </div>
               
-              {renderTabContent(
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {firebaseLinks.instagramReels.map((src, idx) => (
-                    <div key={idx} className="flex justify-center">
-                      <VideoCard 
-                        src={src} 
-                        title={`Engaging Instagram Reel ${idx + 1}`}
-                        className="reel-format" 
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
+              {/* Render video content based on active tab */}
+              {renderVideoContent()}
             </div>
           </ScrollReveal>
         </div>
       </section>
       
       {/* About Section */}
-      <section id="about" className="py-16 md:py-24">
-        <div className="container mx-auto px-4">
+      <section id="about" className="py-16 md:py-24 relative">
+        <div className="absolute top-20 right-1/4 w-72 h-72 rounded-full bg-accent/5 blur-3xl"></div>
+        
+        <div className="container mx-auto px-4 relative z-10">
           <div className="flex flex-col md:flex-row gap-10">
             <div className="md:w-1/2">
               <ScrollReveal>
@@ -223,37 +344,37 @@ const Index = () => {
                 
                 <h3 className="text-xl font-medium mb-4 mt-8">My Skillset</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  <div className="glassmorphic rounded-lg p-3 text-center">Content Creation</div>
-                  <div className="glassmorphic rounded-lg p-3 text-center">Video Editing</div>
-                  <div className="glassmorphic rounded-lg p-3 text-center">Analytics</div>
-                  <div className="glassmorphic rounded-lg p-3 text-center">Brand Development</div>
-                  <div className="glassmorphic rounded-lg p-3 text-center">Community Management</div>
-                  <div className="glassmorphic rounded-lg p-3 text-center">Campaign Strategy</div>
+                  <div className="glassmorphic rounded-lg p-3 text-center backdrop-blur-md bg-white/5">Content Creation</div>
+                  <div className="glassmorphic rounded-lg p-3 text-center backdrop-blur-md bg-white/5">Video Editing</div>
+                  <div className="glassmorphic rounded-lg p-3 text-center backdrop-blur-md bg-white/5">Analytics</div>
+                  <div className="glassmorphic rounded-lg p-3 text-center backdrop-blur-md bg-white/5">Brand Development</div>
+                  <div className="glassmorphic rounded-lg p-3 text-center backdrop-blur-md bg-white/5">Community Management</div>
+                  <div className="glassmorphic rounded-lg p-3 text-center backdrop-blur-md bg-white/5">Campaign Strategy</div>
                 </div>
               </ScrollReveal>
             </div>
             
             <div className="md:w-1/2">
               <ScrollReveal>
-                <div className="glassmorphic-card mb-8">
+                <div className="glassmorphic-card mb-8 bg-gradient-to-br from-background/40 to-background/20 backdrop-blur-xl">
                   <h3 className="subheading">Client Testimonials</h3>
                   
                   <div className="space-y-6 mt-4">
-                    <div className="glassmorphic rounded-lg p-4">
+                    <div className="glassmorphic rounded-lg p-4 backdrop-blur-md bg-white/5">
                       <p className="italic text-foreground/80 mb-3">
                         "Working with this social media manager completely transformed our online presence. Within just two months, engagement on our posts increased by over 40%!"
                       </p>
                       <p className="font-medium">— Saurabh Sharma, Digital Agency Owner</p>
                     </div>
                     
-                    <div className="glassmorphic rounded-lg p-4">
+                    <div className="glassmorphic rounded-lg p-4 backdrop-blur-md bg-white/5">
                       <p className="italic text-foreground/80 mb-3">
                         "The video content created for our campaign was top-notch. It helped double our conversion rates through social media. Truly impressed!"
                       </p>
                       <p className="font-medium">— Ashish Patel, Video Content Creator</p>
                     </div>
                     
-                    <div className="glassmorphic rounded-lg p-4">
+                    <div className="glassmorphic rounded-lg p-4 backdrop-blur-md bg-white/5">
                       <p className="italic text-foreground/80 mb-3">
                         "A true professional who understands both the creative and strategic aspects of social media. My Instagram following grew from 5K to 50K in just one year!"
                       </p>
@@ -268,8 +389,11 @@ const Index = () => {
       </section>
       
       {/* Contact Section */}
-      <section id="contact" className="py-16 md:py-24 bg-secondary/5">
-        <div className="container mx-auto px-4">
+      <section id="contact" className="py-16 md:py-24 bg-secondary/5 relative">
+        <div className="absolute bottom-10 left-10 w-80 h-80 rounded-full bg-primary/5 blur-3xl"></div>
+        <div className="absolute top-20 right-20 w-60 h-60 rounded-full bg-highlight/5 blur-3xl"></div>
+        
+        <div className="container mx-auto px-4 relative z-10">
           <div className="flex flex-col md:flex-row gap-10">
             <div className="md:w-1/2">
               <ScrollReveal>
@@ -312,9 +436,9 @@ const Index = () => {
             
             <div className="md:w-1/2">
               <ScrollReveal>
-                <div className="glassmorphic-card">
+                <div className="glassmorphic-card bg-gradient-to-br from-background/40 to-background/20 backdrop-blur-xl">
                   <h3 className="subheading">Send Me a Message</h3>
-                  <ContactForm />
+                  <ContactForm onSubmit={handleSubmitContact} />
                 </div>
               </ScrollReveal>
             </div>

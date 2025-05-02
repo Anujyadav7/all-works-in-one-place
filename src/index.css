@@ -70,6 +70,7 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    background: radial-gradient(circle at 50% 50%, hsl(var(--background)), hsl(230, 10%, 8%));
   }
 }
 
@@ -228,6 +229,10 @@
   
   /* Reel format for videos */
   .reel-format {
-    @apply aspect-[9/16] max-w-xs mx-auto;
+    @apply aspect-[9/16] max-w-[225px] mx-auto;
+    min-height: 400px;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 }
