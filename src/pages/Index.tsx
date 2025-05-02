@@ -76,6 +76,15 @@ const Index = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Custom TabSection rendering for mobile optimization
+  const renderTabContent = (content: React.ReactNode) => {
+    return (
+      <div className="mt-6">
+        {content}
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
@@ -95,10 +104,10 @@ const Index = () => {
                   and drives audience growth across platforms.
                 </p>
                 <div className="flex flex-wrap gap-4">
-                  <a href="#contact" className="btn-primary">
+                  <a href="#contact" className="btn-primary glassmorphic">
                     Let's Collaborate <ArrowRight className="ml-2 h-4 w-4" />
                   </a>
-                  <a href="#projects" className="btn-outline">
+                  <a href="#projects" className="btn-outline glassmorphic">
                     View My Work
                   </a>
                 </div>
@@ -108,14 +117,14 @@ const Index = () => {
             <div className="md:w-1/2 flex justify-center md:justify-end">
               <ScrollReveal>
                 <div className="relative">
-                  <div className="w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-primary/20">
+                  <div className="w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-white/10 glassmorphic">
                     <img
                       src={firebaseLinks.profile}
                       alt="Social Media Manager"
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <div className="absolute -bottom-4 -right-4 bg-background p-4 rounded-lg shadow-lg">
+                  <div className="absolute -bottom-4 -right-4 glassmorphic p-4 rounded-lg">
                     <p className="text-lg font-display font-medium highlight-gradient">Social Media Manager</p>
                   </div>
                 </div>
@@ -126,7 +135,7 @@ const Index = () => {
       </section>
       
       {/* Showcase Section */}
-      <section id="projects" className="py-16 md:py-24 bg-secondary/10">
+      <section id="projects" className="py-16 md:py-24">
         <div className="container mx-auto px-4">
           <ScrollReveal>
             <h2 className="section-title text-center">Showcase</h2>
@@ -136,84 +145,34 @@ const Index = () => {
           </ScrollReveal>
           
           <ScrollReveal>
-            <TabSection 
-              tabs={[
-                {
-                  id: "pw-content",
-                  label: "Personal Branding",
-                  content: (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {firebaseLinks.pwContent.map((src, idx) => (
-                        <ImageCard 
-                          key={idx} 
-                          src={src} 
-                          alt={`Personal Branding ${idx + 1}`}
-                          title={`Personal Branding ${idx + 1}`}
-                          description="Content designed for personal brand presence"
-                        />
-                      ))}
-                    </div>
-                  )
-                },
-                {
-                  id: "travel",
-                  label: "Travel Posters",
-                  content: (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {firebaseLinks.travelPosters.map((src, idx) => (
-                        <ImageCard 
-                          key={idx} 
-                          src={src}
-                          alt={`Travel Poster ${idx + 1}`}
-                          title={`Travel Poster ${idx + 1}`}
-                          description="Destination promotional content"
-                        />
-                      ))}
-                    </div>
-                  )
-                },
-                {
-                  id: "instagram-ads",
-                  label: "Instagram Ad Suite",
-                  content: (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {firebaseLinks.instagramAds.map((src, idx) => (
-                        <ImageCard 
-                          key={idx} 
-                          src={src} 
-                          alt={`Instagram Ad ${idx + 1}`}
-                          title={`Instagram Ad ${idx + 1}`}
-                          description="Paid promotional content"
-                        />
-                      ))}
-                    </div>
-                  )
-                },
-                {
-                  id: "youtube-thumbnails",
-                  label: "YouTube Thumbnails",
-                  content: (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
-                      {firebaseLinks.youtubeThumbnails.map((src, idx) => (
-                        <ImageCard 
-                          key={idx} 
-                          src={src} 
-                          alt={`YouTube Thumbnail ${idx + 1}`}
-                          title={`YouTube Thumbnail ${idx + 1}`}
-                          description="High-CTR thumbnail design"
-                        />
-                      ))}
-                    </div>
-                  )
-                }
-              ]} 
-            />
+            <div className="glassmorphic-card mb-8">
+              <div className="tab-buttons-container">
+                <button className="tab-button active">Personal Branding</button>
+                <button className="tab-button">Travel Posters</button>
+                <button className="tab-button">Instagram Ad Suite</button>
+                <button className="tab-button">YouTube Thumbnails</button>
+              </div>
+              
+              {renderTabContent(
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {firebaseLinks.pwContent.map((src, idx) => (
+                    <ImageCard 
+                      key={idx} 
+                      src={src} 
+                      alt={`Personal Branding ${idx + 1}`}
+                      title={`Personal Branding ${idx + 1}`}
+                      description="Content designed for personal brand presence"
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
           </ScrollReveal>
         </div>
       </section>
       
       {/* Video Edits Section */}
-      <section id="videos" className="py-16 md:py-24">
+      <section id="videos" className="py-16 md:py-24 bg-secondary/5">
         <div className="container mx-auto px-4">
           <ScrollReveal>
             <h2 className="section-title text-center">Video Edits</h2>
@@ -223,61 +182,33 @@ const Index = () => {
           </ScrollReveal>
           
           <ScrollReveal>
-            <TabSection 
-              tabs={[
-                {
-                  id: "instagram-reels",
-                  label: "Instagram Reels",
-                  content: (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {firebaseLinks.instagramReels.map((src, idx) => (
-                        <VideoCard 
-                          key={idx} 
-                          src={src} 
-                          title={`Engaging Instagram Reel ${idx + 1}`} 
-                        />
-                      ))}
+            <div className="glassmorphic-card">
+              <div className="tab-buttons-container">
+                <button className="tab-button active">Instagram Reels</button>
+                <button className="tab-button">YouTube Shorts</button>
+                <button className="tab-button">Product Videos</button>
+              </div>
+              
+              {renderTabContent(
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {firebaseLinks.instagramReels.map((src, idx) => (
+                    <div key={idx} className="flex justify-center">
+                      <VideoCard 
+                        src={src} 
+                        title={`Engaging Instagram Reel ${idx + 1}`}
+                        className="reel-format" 
+                      />
                     </div>
-                  )
-                },
-                {
-                  id: "youtube-shorts",
-                  label: "YouTube Shorts",
-                  content: (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {firebaseLinks.youtubeShorts.map((src, idx) => (
-                        <VideoCard 
-                          key={idx} 
-                          src={src} 
-                          title={`YouTube Short ${idx + 1}`} 
-                        />
-                      ))}
-                    </div>
-                  )
-                },
-                {
-                  id: "product-videos",
-                  label: "Product Videos",
-                  content: (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {firebaseLinks.productSellVideos.map((src, idx) => (
-                        <VideoCard 
-                          key={idx} 
-                          src={src}
-                          title={`Product Video ${idx + 1}`} 
-                        />
-                      ))}
-                    </div>
-                  )
-                }
-              ]} 
-            />
+                  ))}
+                </div>
+              )}
+            </div>
           </ScrollReveal>
         </div>
       </section>
       
       {/* About Section */}
-      <section id="about" className="py-16 md:py-24 bg-secondary/10">
+      <section id="about" className="py-16 md:py-24">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row gap-10">
             <div className="md:w-1/2">
@@ -292,41 +223,41 @@ const Index = () => {
                 
                 <h3 className="text-xl font-medium mb-4 mt-8">My Skillset</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  <div className="bg-secondary/30 rounded-lg p-3 text-center">Content Creation</div>
-                  <div className="bg-secondary/30 rounded-lg p-3 text-center">Video Editing</div>
-                  <div className="bg-secondary/30 rounded-lg p-3 text-center">Analytics</div>
-                  <div className="bg-secondary/30 rounded-lg p-3 text-center">Brand Development</div>
-                  <div className="bg-secondary/30 rounded-lg p-3 text-center">Community Management</div>
-                  <div className="bg-secondary/30 rounded-lg p-3 text-center">Campaign Strategy</div>
+                  <div className="glassmorphic rounded-lg p-3 text-center">Content Creation</div>
+                  <div className="glassmorphic rounded-lg p-3 text-center">Video Editing</div>
+                  <div className="glassmorphic rounded-lg p-3 text-center">Analytics</div>
+                  <div className="glassmorphic rounded-lg p-3 text-center">Brand Development</div>
+                  <div className="glassmorphic rounded-lg p-3 text-center">Community Management</div>
+                  <div className="glassmorphic rounded-lg p-3 text-center">Campaign Strategy</div>
                 </div>
               </ScrollReveal>
             </div>
             
             <div className="md:w-1/2">
               <ScrollReveal>
-                <div className="bg-secondary/20 rounded-xl p-6 mb-8">
+                <div className="glassmorphic-card mb-8">
                   <h3 className="subheading">Client Testimonials</h3>
                   
                   <div className="space-y-6 mt-4">
-                    <div className="bg-background rounded-lg p-4 border border-border/50">
+                    <div className="glassmorphic rounded-lg p-4">
                       <p className="italic text-foreground/80 mb-3">
-                        "Working with this social media manager transformed our online presence completely. The engagement on our posts increased by 300% in just two months!"
+                        "Working with this social media manager completely transformed our online presence. Within just two months, engagement on our posts increased by over 40%!"
                       </p>
-                      <p className="font-medium">— Sarah J., Fashion Brand Owner</p>
+                      <p className="font-medium">— Saurabh Sharma, Digital Agency Owner</p>
                     </div>
                     
-                    <div className="bg-background rounded-lg p-4 border border-border/50">
+                    <div className="glassmorphic rounded-lg p-4">
                       <p className="italic text-foreground/80 mb-3">
-                        "The video content created for our product launch was exceptional. We saw conversion rates double from our social campaigns. Highly recommended!"
+                        "The video content created for our campaign was top-notch. It helped double our conversion rates through social media. Truly impressed!"
                       </p>
-                      <p className="font-medium">— Michael T., Tech Startup Founder</p>
+                      <p className="font-medium">— Ashish Patel, Video Content Creator</p>
                     </div>
                     
-                    <div className="bg-background rounded-lg p-4 border border-border/50">
+                    <div className="glassmorphic rounded-lg p-4">
                       <p className="italic text-foreground/80 mb-3">
-                        "A true professional who understands both the creative and analytical sides of social media management. Our Instagram following grew from 5K to 50K in one year!"
+                        "A true professional who understands both the creative and strategic aspects of social media. My Instagram following grew from 5K to 50K in just one year!"
                       </p>
-                      <p className="font-medium">— Elena R., Lifestyle Influencer</p>
+                      <p className="font-medium">— Sarvesh Mishra, Yoga Instructor</p>
                     </div>
                   </div>
                 </div>
@@ -337,7 +268,7 @@ const Index = () => {
       </section>
       
       {/* Contact Section */}
-      <section id="contact" className="py-16 md:py-24">
+      <section id="contact" className="py-16 md:py-24 bg-secondary/5">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row gap-10">
             <div className="md:w-1/2">
@@ -354,20 +285,20 @@ const Index = () => {
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3 text-primary" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                       </svg>
-                      <span>New York, NY</span>
+                      <span>Uttar Pradesh (U.P.)</span>
                     </div>
                     <div className="flex items-center">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3 text-primary" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                         <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                       </svg>
-                      <span>contact@smmanager.com</span>
+                      <span>infoanuj74@gmail.com</span>
                     </div>
                     <div className="flex items-center">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3 text-primary" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                       </svg>
-                      <span>+1 (555) 123-4567</span>
+                      <span>+91 7408392300</span>
                     </div>
                   </div>
                 </div>
@@ -381,7 +312,7 @@ const Index = () => {
             
             <div className="md:w-1/2">
               <ScrollReveal>
-                <div className="bg-secondary/20 rounded-xl p-6">
+                <div className="glassmorphic-card">
                   <h3 className="subheading">Send Me a Message</h3>
                   <ContactForm />
                 </div>

@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const ContactForm: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -19,19 +20,35 @@ const ContactForm: React.FC = () => {
     }));
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate form submission
-    setTimeout(() => {
+    try {
+      // Submit to Supabase
+      const { error } = await supabase
+        .from('contact_submissions')
+        .insert([formData]);
+      
+      if (error) {
+        throw error;
+      }
+      
       toast({
         title: "Message sent!",
         description: "Thank you for reaching out. I'll get back to you soon.",
       });
       setFormData({ name: '', email: '', message: '' });
+    } catch (error: any) {
+      console.error("Error submitting form:", error);
+      toast({
+        title: "Error sending message",
+        description: "There was a problem sending your message. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
       setIsSubmitting(false);
-    }, 1000);
+    }
   };
   
   return (
@@ -47,7 +64,7 @@ const ContactForm: React.FC = () => {
           value={formData.name}
           onChange={handleChange}
           required
-          className="w-full px-4 py-3 bg-secondary/50 rounded-lg border border-input focus:outline-none focus:ring-2 focus:ring-primary/50"
+          className="w-full px-4 py-3 glassmorphic rounded-lg border border-white/10 focus:outline-none focus:ring-2 focus:ring-primary/50"
           placeholder="Your name"
         />
       </div>
@@ -63,7 +80,7 @@ const ContactForm: React.FC = () => {
           value={formData.email}
           onChange={handleChange}
           required
-          className="w-full px-4 py-3 bg-secondary/50 rounded-lg border border-input focus:outline-none focus:ring-2 focus:ring-primary/50"
+          className="w-full px-4 py-3 glassmorphic rounded-lg border border-white/10 focus:outline-none focus:ring-2 focus:ring-primary/50"
           placeholder="your.email@example.com"
         />
       </div>
@@ -79,7 +96,7 @@ const ContactForm: React.FC = () => {
           onChange={handleChange}
           required
           rows={5}
-          className="w-full px-4 py-3 bg-secondary/50 rounded-lg border border-input focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
+          className="w-full px-4 py-3 glassmorphic rounded-lg border border-white/10 focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
           placeholder="How can I help you?"
         />
       </div>
@@ -87,7 +104,7 @@ const ContactForm: React.FC = () => {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="btn-primary w-full py-3"
+        className="btn-primary glassmorphic w-full py-3"
       >
         {isSubmitting ? 'Sending...' : 'Send Message'}
       </button>

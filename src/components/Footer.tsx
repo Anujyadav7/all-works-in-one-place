@@ -6,7 +6,7 @@ const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
   
   return (
-    <footer className="bg-secondary/20 border-t border-border mt-16">
+    <footer className="glassmorphic border-t border-white/5 mt-16">
       <div className="container mx-auto py-8 px-4">
         <div className="flex flex-col md:flex-row md:justify-between items-center">
           <div className="mb-4 md:mb-0">
@@ -22,7 +22,7 @@ const Footer: React.FC = () => {
           </div>
         </div>
         
-        <div className="mt-6 pt-6 border-t border-border/30 flex justify-center md:justify-start">
+        <div className="mt-6 pt-6 border-t border-white/10 flex justify-center md:justify-start">
           <nav>
             <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2">
               <li><a href="#home" className="text-sm text-foreground/70 hover:text-primary transition-colors">Home</a></li>
